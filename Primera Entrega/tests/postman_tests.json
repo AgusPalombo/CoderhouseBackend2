@@ -1,0 +1,28 @@
+1. Registro de Usuario
+Método: POST
+URL: http://localhost:3000/api/sessions/register
+Body (JSON):
+
+{
+    "first_name": "Juan",
+    "last_name": "Pérez",
+    "email": "juan.perez@example.com",
+    "age": 30,
+    "password": "securePassword123"
+}
+
+2. Inicio de Sesión
+Método: POST
+URL: http://localhost:3000/api/sessions/login
+Body (JSON):
+
+{
+    "email": "juan.perez@example.com",
+    "password": "securePassword123"
+}
+
+3. Obtener Usuario Actual
+Método: GET
+URL: http://localhost:3000/api/sessions/current
+Headers:
+Cookie: jwt=<token_obtenido_en_login>
