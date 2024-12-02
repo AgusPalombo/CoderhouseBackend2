@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Storage Ejemplo</title>
+</head>
+<body>
+  <!-- Formulario básico con campos de nombre y edad -->
+  <h1>Formulario de Sesión</h1>
+  <form id="miFormulario">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre">
+    <br><br>
+    <label for="edad">Edad:</label>
+    <input type="text" id="edad">
+    <br><br>
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    // ==========================================
+    // RECUPERACIÓN INICIAL DE DATOS
+    // ==========================================
+    // Cuando la página carga, verifica si hay datos guardados en sessionStorage
+    // Si existen datos, los coloca en los campos correspondientes
+    // Si no hay datos, deja los campos vacíos ('')
+    document.getElementById('nombre').value = sessionStorage.getItem('nombre') || '';
+    document.getElementById('edad').value = sessionStorage.getItem('edad') || '';
+
+    // ==========================================
+    // AUTOGUARDADO DE DATOS
+    // ==========================================
+    // Escucha el evento 'input' en el campo nombre
+    // Cada vez que el usuario escribe algo, se guarda en sessionStorage
+    document.getElementById('nombre').addEventListener('input', (event) => {
+      sessionStorage.setItem('nombre', event.target.value);
+    });
+
+    // Hace lo mismo para el campo edad
+    // 'event.target.value' contiene el valor actual del campo
+    document.getElementById('edad').addEventListener('input', (event) => {
+      sessionStorage.setItem('edad', event.target.value);
+    });
+
+    // ==========================================
+    // MANEJO DEL ENVÍO DEL FORMULARIO
+    // ==========================================
+    // Cuando el usuario envía el formulario:
+    document.getElementById('miFormulario').addEventListener('submit', (event) => {
+      // Previene que el formulario se envíe de manera tradicional
+      event.preventDefault(); 
+      
+      // Limpia todos los datos guardados en sessionStorage
+      sessionStorage.clear();
+      
+      // Muestra un mensaje al usuario
+      alert('Formulario enviado y datos eliminados de sessionStorage.');
+    });
+  </script>
+</body>
+</html>
