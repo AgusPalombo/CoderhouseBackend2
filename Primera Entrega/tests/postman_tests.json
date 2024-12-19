@@ -1,28 +1,146 @@
-1. Registro de Usuario
-Método: POST
-URL: http://localhost:3000/api/sessions/register
+1. Registro de Usuario (POST /api/auth/register) OK
+Este endpoint te permitirá crear un nuevo usuario:
+
+URL: POST http://localhost:8080/api/auth/register
 Body (JSON):
 
 {
     "first_name": "Juan",
-    "last_name": "Pérez",
+    "last_name": "Perez",
     "email": "juan.perez@example.com",
-    "age": 30,
-    "password": "securePassword123"
+    "age": 25,
+    "password": "password123",
 }
 
-2. Inicio de Sesión
-Método: POST
-URL: http://localhost:3000/api/sessions/login
+{
+    "first_name": "Carlos",
+    "last_name": "Juarez",
+    "email": "cj@admin.com",
+    "age": 45,
+    "password": "admin321",
+    "role": "admin"
+}
+
+2. Login de Usuario (POST /api/auth/login) OK
+Para obtener un token JWT después de un login exitoso.
+
+URL: POST http://localhost:8080/api/auth/login
 Body (JSON):
 
 {
     "email": "juan.perez@example.com",
-    "password": "securePassword123"
+    "password": "password123"
 }
 
-3. Obtener Usuario Actual
-Método: GET
-URL: http://localhost:3000/api/sessions/current
+Respuesta:
+{
+    "token": "jwt_token_here"
+}
+
+3. Obtener el Usuario Actual (GET /api/auth/current) OK
+Este endpoint debería devolver solo los datos esenciales del usuario (sin enviar información sensible como password).
+
+URL: GET http://localhost:8080/api/auth/current
 Headers:
-Cookie: jwt=<token_obtenido_en_login>
+Authorization: <jwt_token_here> - es opcional ya que la logica devuelve igualmente el current
+Respuesta (DTO):
+
+{
+    "id": "user_id",
+    "first_name": "Juan",
+    "last_name": "Perez",
+    "email": "juan.perez@example.com",
+    "role": "user"
+}
+
+
+4. Crear Producto (POST /api/products) OK
+Este endpoint permitirá a los administradores crear productos. Asegúrate de que solo los administradores tengan acceso a esta ruta.
+
+URL: POST http://localhost:8080/api/products
+Headers:
+Authorization: Bearer <jwt_token_here> (solo para administradores)
+Body (JSON):
+
+{
+    "name": "Producto A",
+    "description": "Descripción del producto",
+    "price": 100,
+    "stock": 50
+}
+
+Respuesta:
+
+{
+    "name": "Producto A",
+    "description": "Descripción del producto",
+    "price": 100,
+    "stock": 50,
+    "createdAt": "x",
+    "updatedAt": "x"
+}
+
+5. Actualizar Producto (PUT) OK
+URL:
+PUT http://localhost:8080/admin/products/:id (ejemplo: 676489a30619e5729bb58bd3)
+
+Body (raw JSON):
+{
+    "name": "Nuevo nombre del producto",
+    "price": 1500,
+    "stock": 30,
+    "description": "Descripción actualizada del producto"
+}
+
+6. Eliminar Producto (Administrador)
+Método: DELETE
+URL: http://localhost:3000/api/admin/products/:id
+Esperado:
+Status 200: Producto eliminado con éxito.
+La respuesta debe indicar que el producto ha sido eliminado.
+
+7. Agregar Producto al Carrito (POST /api/carts/:cid/items)
+Este endpoint permite agregar productos al carrito del usuario. Asegúrate de que el cid corresponda al carrito del usuario autenticado.
+
+URL: POST http://localhost:8080/api/carts/cart
+
+Body (JSON):
+{
+    "productId": "product_id",
+    "quantity": x,
+
+}
+Respuesta:
+
+{
+    "message": "Producto agregado al carrito",
+    "cart": {
+        "_id": "cart_id",
+        "user": "user_id",
+        "items": [
+            {
+                "productId": "product_id",
+                "quantity": 2,
+                "price": 100
+            }
+        ]
+    }
+}
+
+8. Finalizar Compra del Carrito (POST /api/carts/:cid/purchase)
+Este endpoint finaliza la compra del carrito, verificando el stock y generando un ticket.
+
+URL: POST /api/carts/:cid/purchase
+Headers:
+Respuesta (JSON):
+
+{
+    "message": "Compra realizada exitosamente",
+    "ticket": {
+        "code": "unique_code_here",
+        "purchase_datetime": "2024-12-19T12:00:00.000Z",
+        "amount": 200,
+        "purchaser": "juan.perez@example.com"
+    },
+    "unprocessedProducts": ["product_id"]
+}

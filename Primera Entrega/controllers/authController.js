@@ -3,7 +3,7 @@ const User = require('../models/User');
 const { hashPassword, comparePassword } = require('../utils/bcryptHelper');
 
 exports.register = async (req, res) => {
-    const { first_name, last_name, email, age, password } = req.body;
+    const { first_name, last_name, email, age, password, role } = req.body;
     try {
         const hashedPassword = hashPassword(password);
         const newUser = await User.create({
@@ -12,6 +12,7 @@ exports.register = async (req, res) => {
             email,
             age,
             password: hashedPassword,
+            role: role || 'user' 
         });
         res.status(201).send({ message: 'User registered successfully', user: newUser });
     } catch (err) {
@@ -35,4 +36,13 @@ exports.login = async (req, res) => {
 
 exports.current = (req, res) => {
     res.send(req.user);
+};
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({}, 'first_name last_name _id');
+        res.status(200).send(users);
+    } catch (err) {
+        res.status(500).send({ error: err.message });
+    }
 };

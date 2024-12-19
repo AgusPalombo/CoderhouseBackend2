@@ -14,7 +14,7 @@ passport.use(
             try {
                 const user = await User.findById(payload.id);
                 if (!user) return done(null, false);
-                return done(null, user);
+                return done(null, user); // Devolvemos el usuario completo, que incluye el rol
             } catch (err) {
                 return done(err, false);
             }
@@ -23,3 +23,4 @@ passport.use(
 );
 
 module.exports = passport;
+
