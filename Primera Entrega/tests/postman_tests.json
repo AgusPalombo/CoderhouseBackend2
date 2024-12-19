@@ -12,6 +12,8 @@ Body (JSON):
     "password": "password123",
 }
 
+ADMIN
+
 {
     "first_name": "Carlos",
     "last_name": "Juarez",
@@ -28,14 +30,17 @@ URL: POST http://localhost:8080/api/auth/login
 Body (JSON):
 
 {
-    "email": "juan.perez@example.com",
-    "password": "password123"
+    "email": "dp@user.com",
+    "password": "user123"
 }
 
-Respuesta:
+admin existente:
 {
-    "token": "jwt_token_here"
+    "email": "ap@admin.com",
+    "password": "admin123"
 }
+
+
 
 3. Obtener el Usuario Actual (GET /api/auth/current) OK
 Este endpoint debería devolver solo los datos esenciales del usuario (sin enviar información sensible como password).
@@ -80,9 +85,11 @@ Respuesta:
     "updatedAt": "x"
 }
 
+OPCIONAL: GET http://localhost:8080/api/admin/products OBTENER TODOS LOS PRODUCTOS PARA USAR SU ID
+
 5. Actualizar Producto (PUT) OK
 URL:
-PUT http://localhost:8080/admin/products/:id (ejemplo: 676489a30619e5729bb58bd3)
+PUT http://localhost:8080/admin/products/:id
 
 Body (raw JSON):
 {
@@ -99,7 +106,7 @@ Esperado:
 Status 200: Producto eliminado con éxito.
 La respuesta debe indicar que el producto ha sido eliminado.
 
-7. Agregar Producto al Carrito (POST /api/carts/:cid/items)
+7. Agregar Producto al Carrito 
 Este endpoint permite agregar productos al carrito del usuario. Asegúrate de que el cid corresponda al carrito del usuario autenticado.
 
 URL: POST http://localhost:8080/api/carts/cart
@@ -108,7 +115,6 @@ Body (JSON):
 {
     "productId": "product_id",
     "quantity": x,
-
 }
 Respuesta:
 

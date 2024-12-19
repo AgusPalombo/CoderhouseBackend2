@@ -22,14 +22,18 @@ class CartController {
             // Verificar si el producto ya está en el carrito
             const productIndex = cart.items.findIndex(item => item.productId.toString() === productId);
 
+            const product = await ProductDAO.getById(productId); // Obtener el producto para verificar stock
+            if (!product) {
+                return res.status(404).json({ message: 'Producto no encontrado' });
+            }
+
+            // Validar si hay suficiente stock
+            if (quantity > product.stock) {
+                return res.status(400).json({ message: 'No hay stock suficiente para dicha cantidad' });
+            }
+
             if (productIndex === -1) {
                 // Si el producto no está en el carrito, lo agregamos
-                const product = await ProductDAO.getById(productId);
-                if (!product) {
-                    return res.status(404).json({ message: 'Producto no encontrado' });
-                }
-
-                // Agregar el producto al carrito
                 cart.items.push({
                     productId: product._id,
                     quantity,
