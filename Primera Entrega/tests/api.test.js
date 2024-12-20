@@ -10,9 +10,12 @@ describe('Pruebas de endpoints de Usuario y Admin', () => {
   // Registro de un nuevo usuario
   it('Debería registrar un nuevo usuario', async () => {
     const res = await request(app)
-      .post('/api/sessions/register')
+      .post('/api/auth/register')
       .send({
-        email: 'testuser@mail.com',
+        first_name: 'Juan',
+        last_name: 'Perez',
+        email: 'juan.perez@example.com',
+        age: 25,
         password: 'password123',
       });
   
@@ -24,15 +27,25 @@ describe('Pruebas de endpoints de Usuario y Admin', () => {
   // Login de un usuario
   it('Debería hacer login del usuario y devolver un token', async () => {
     const res = await request(app)
-      .post('/api/sessions/login')
+      .post('/api/auth/login')
       .send({
-        email: 'testuser@mail.com',
+        email: 'juan.perez@example.com',
         password: 'password123',
       });
 
     userToken = res.body.token; // Guardamos el token de usuario
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('token');
+  });
+
+  // Obtener el usuario actual
+  it('Debería obtener el usuario actual', async () => {
+    const res = await request(app)
+      .get('/api/auth/current')
+      .set('Authorization', `Bearer ${userToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('email', 'juan.perez@example.com');
   });
 
   // Creación de un producto como administrador
@@ -64,17 +77,27 @@ describe('Pruebas de endpoints de Usuario y Admin', () => {
   // Modificar un producto como administrador
   it('Debería actualizar un producto como administrador', async () => {
     const res = await request(app)
-      .put(`/api/admin/products/${productId}`)
+      .put(`/api/products/${productId}`)
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
-        name: 'Producto Actualizado',
-        price: 120,
-        description: 'Descripción actualizada',
-        stock: 40
+        name: 'Nuevo nombre del producto',
+        price: 1500,
+        stock: 30,
+        description: 'Descripción actualizada del producto'
       });
 
     expect(res.status).toBe(200);
-    expect(res.body.name).toBe('Producto Actualizado');
+    expect(res.body.message).toBe('Producto actualizado exitosamente');
+  });
+
+  // Eliminar un producto
+  it('Debería eliminar un producto como administrador', async () => {
+    const res = await request(app)
+      .delete(`/api/products/${productId}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe('Producto eliminado exitosamente');
   });
 
   // No debería permitir crear un producto como usuario
@@ -93,15 +116,27 @@ describe('Pruebas de endpoints de Usuario y Admin', () => {
   });
 
   // Agregar un producto al carrito como usuario
-  it('Debería crear un ticket a partir de los productos del carrito como usuario', async () => {
-    // Supongamos que cartId está previamente configurado
+  it('Debería agregar un producto al carrito como usuario', async () => {
     const res = await request(app)
-      .post(`/api/carts/${cartId}/add`)
+      .post('/api/carts/cart')
       .set('Authorization', `Bearer ${userToken}`)
-      .send({ productId });
+      .send({
+        productId: productId,
+        quantity: 1,
+      });
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('message', 'Producto agregado al carrito');
+  });
+
+  // Finalizar compra del carrito
+  it('Debería finalizar la compra del carrito', async () => {
+    const res = await request(app)
+      .post(`/api/carts/${cartId}/purchase`)
+      .set('Authorization', `Bearer ${userToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('message', 'Compra realizada exitosamente');
   });
 
   // El administrador debería poder obtener todos los productos
@@ -125,4 +160,5 @@ describe('Pruebas de endpoints de Usuario y Admin', () => {
   });
 
 });
+
 

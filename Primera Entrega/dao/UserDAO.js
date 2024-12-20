@@ -5,7 +5,7 @@ class UserDAO {
     // Método para obtener todos los usuarios
     async getAll() {
         try {
-            return await User.find({}, '_id first_name last_name email role'); // Incluye solo los campos necesarios
+            return await User.find({}, '_id first_name last_name email role');
         } catch (error) {
             throw new Error(`Error al obtener los usuarios: ${error.message}`);
         }
