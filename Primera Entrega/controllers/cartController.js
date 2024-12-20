@@ -72,7 +72,7 @@ class CartController {
             let unprocessedProducts = [];
             let totalAmount = 0;
 
-            // Obtener todos los productos del carrito en una sola consulta
+            // Obtener todos los productos del carrito
             const productIds = cart.items.map(item => item.productId);
             const products = await ProductDAO.getByIds(productIds);
 
